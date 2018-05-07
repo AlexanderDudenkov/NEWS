@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/new_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/latest_item"/>
+        <item
+            android:id="@+id/popular_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/popular_item"/>
+        <item
+            android:id="@+id/ua_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/ua_item"/>
+        <item
+            android:id="@+id/news2018_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/news2018_item"/>
+        <item
+            android:id="@+id/science_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/science_item"/>
+        <item
+            android:id="@+id/saved_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/saved_item"/>
+    </group>
+
+</menu>

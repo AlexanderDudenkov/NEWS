@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">NEWS</string>
+    <string name="facebook_app_id">192069788183543</string>
+    <string name="facebook_login_protocol_scheme">fb192069788183543</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_share">Share in Facebook</string>
+    <string name="latest_item">Latest</string>
+    <string name="ua_item">Ukraine news</string>
+    <string name="news2018_item">News for 2018 year</string>
+    <string name="saved_item">Saved</string>
+    <string name="error">Error</string>
+    <string name="popular_item">Popular</string>
+    <string name="loading_message">Loading</string>
+    <string name="failure_create_dir">Can not create directory to save image</string>
+    <string name="date_format">yyyy-MM-dd hh:mm:ss</string>
+    <string name="save_file_success">Saved</string>
+    <string name="science_item">Science</string>
+</resources>

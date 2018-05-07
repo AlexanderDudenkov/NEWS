@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NEWS</string>
+    <string name="facebook_app_id">192069788183543</string>
+    <string name="facebook_login_protocol_scheme">fb192069788183543</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_share">Поделиться в Facebook</string>
+    <string name="latest_item">Последние</string>
+    <string name="ua_item">Новости Украины</string>
+    <string name="news2018_item">За 2018 год</string>
+    <string name="saved_item">Сохраненные</string>
+    <string name="error">Ошибка сети</string>
+    <string name="popular_item">Популярные</string>
+    <string name="loading_message">Загрузка</string>
+    <string name="science_item">Наука</string>
+    <string name="save_file_success">Сохранено</string>
+    <string name="failure_create_dir">Ошибка при создании директории</string>
+</resources>
