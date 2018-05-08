@@ -3,6 +3,9 @@ package com.dudencovgmail.news.detail_screen.view;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +16,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,14 +26,12 @@ import com.dudencovgmail.news.R;
 import com.dudencovgmail.news.detail_screen.presenter.DetailPresenter;
 import com.dudencovgmail.news.detail_screen.presenter.DetailPresenterIF;
 import com.dudencovgmail.news.model.Repository;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 public class DetailActivity extends AppCompatActivity implements DetailActivityIF {
@@ -40,10 +42,9 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityI
     private DetailPresenterIF mDetailPresenterIF;
     private DetailFragment mFragment;
     private ViewPager viewPager;
-    private int mSize, position;
+    private int mSize;
     private FloatingActionButton fab;
     private boolean mItemMenuSaved;
-    private CallbackManager mCallbackManager;
     private ShareDialog mShareDialog;
 
     public static Intent newIntent(int position, Context packageContext, boolean itemMenuSaved) {
@@ -57,7 +58,6 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
         init();
         loadIfSwipe();
         clickFab();
@@ -65,30 +65,13 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityI
 
     private void init() {
         mItemMenuSaved = getIntent().getBooleanExtra(EXTRA_SAVED, false);
-        position = getIntent().getIntExtra(EXTRA_POSITION_RV, 0);
+        int position = getIntent().getIntExtra(EXTRA_POSITION_RV, 0);
         viewPager = findViewById(R.id.view_pager);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fab = findViewById(R.id.fab);
 
-        mCallbackManager = CallbackManager.Factory.create();
         mShareDialog = new ShareDialog(this);
-        mShareDialog.registerCallback(mCallbackManager, new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-                Log.d(TAG, "init(); onSuccess(Sharer.Result result)");
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "init(); onCancel()");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "init(); onError(FacebookException error)");
-            }
-        });
         mDetailPresenterIF = new DetailPresenter(this, new Repository());
         mDetailPresenterIF.getSize(mItemMenuSaved);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -106,7 +89,6 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityI
             }
         });
         viewPager.setCurrentItem(position);
-
     }
 
     @Override
@@ -117,18 +99,20 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityI
 
     @Override
     public void hideFab() {
+        Log.d(TAG, "hideFab()");
         fab.hide();
     }
 
     @Override
     public void showFab() {
+        Log.d(TAG, "showFab()");
         fab.show();
     }
 
     @Override
     public void showShareDialog(String urlArticle) {
         ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                .setQuote("Link")
+                .setQuote(urlArticle)
                 .setContentUrl(Uri.parse(urlArticle))
                 .build();
         if (ShareDialog.canShow(ShareLinkContent.class)) {
@@ -144,20 +128,20 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityI
         sendBroadcast(intent);
     }
 
-//    private void printKeyHash() {
-//        Log.d(TAG,"printKeyHash()");
-//        try{
-//            PackageInfo info = getPackageManager().getPackageInfo("com.dudencovgmail.news",
-//                    PackageManager.GET_SIGNATURES);
-//            for(Signature signature : info.signatures){
-//                MessageDigest md = MessageDigest.getInstance("SHA");
-//                md.update(signature.toByteArray());
-//                Log.d("KeyHash", Base64.encodeToString(md.digest(),Base64.DEFAULT));
-//            }
-//        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void printKeyHash() {
+        Log.d(TAG, "printKeyHash()");
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.dudencovgmail.news",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void loadIfSwipe() {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

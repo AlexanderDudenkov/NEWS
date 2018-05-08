@@ -33,7 +33,8 @@ public class Presenter implements PresenterIF {
     private int mItemId;
     private ActivityIF mActivityIF;
     private ListAdapter mAdapter;
-    private boolean b1, b2, b3, b4, b5, loadingCollections, loadingPhotosCollection;
+    private boolean pageEqualsOneItem1, pageEqualsOneItem2, pageEqualsOneItem3, pageEqualsOneItem4,
+            pageEqualsOneItem5,loadingCollections, loadingPhotosCollection;
 
     public Presenter(MainActivity activity, ListFragment fragment, Repository repository) {
         mActivityIF = activity;
@@ -78,36 +79,40 @@ public class Presenter implements PresenterIF {
         mCompositeDisposable = new CompositeDisposable();
 
         if (mItemId == R.id.new_item || mItemId == 0) {
-            if (!b1) {
-                b1 = true;
-                b2 = b3 = b4 = b5 = loadingCollections = false;
+            if (!pageEqualsOneItem1) {
+                pageEqualsOneItem1 = true;
+                pageEqualsOneItem2 = pageEqualsOneItem3 = pageEqualsOneItem4 = pageEqualsOneItem5
+                        = loadingCollections = false;
                 mPage = 1;
                 mArticles.clear();
                 mRepositoryIF.clearCash();
             }
             mCompositeDisposable.add(mRepositoryIF.getLatestArticles(mPage).subscribeWith(getObserver()));
         } else if (mItemId == R.id.popular_item) {
-            if (!b2) {
-                b2 = true;
-                b1 = b3 = b4 = b5 = loadingCollections = false;
+            if (!pageEqualsOneItem2) {
+                pageEqualsOneItem2 = true;
+                pageEqualsOneItem1 = pageEqualsOneItem3 = pageEqualsOneItem4 = pageEqualsOneItem5
+                        = loadingCollections = false;
                 mPage = 1;
                 mArticles.clear();
                 mRepositoryIF.clearCash();
             }
             mCompositeDisposable.add(mRepositoryIF.getPopularArticles(mPage).subscribeWith(getObserver()));
         } else if (mItemId == R.id.ua_item) {
-            if (!b3) {
-                b3 = true;
-                b1 = b2 = b4 = b5 = loadingCollections = false;
+            if (!pageEqualsOneItem3) {
+                pageEqualsOneItem3 = true;
+                pageEqualsOneItem1 = pageEqualsOneItem2 = pageEqualsOneItem4 = pageEqualsOneItem5
+                        = loadingCollections = false;
                 mPage = 1;
                 mArticles.clear();
                 mRepositoryIF.clearCash();
             }
             mCompositeDisposable.add(mRepositoryIF.getLatestUaArticles(mPage).subscribeWith(getObserver()));
         } else if (mItemId == R.id.news2018_item) {
-            if (!b4) {
-                b4 = loadingCollections = true;
-                b1 = b2 = b3 = b5 = loadingPhotosCollection = false;
+            if (!pageEqualsOneItem4) {
+                pageEqualsOneItem4 = loadingCollections = true;
+                pageEqualsOneItem1 = pageEqualsOneItem2 = pageEqualsOneItem3 = pageEqualsOneItem5
+                        = loadingPhotosCollection = false;
                 mPage = 1;
                 mArticles.clear();
                 mRepositoryIF.clearCash();
@@ -115,9 +120,10 @@ public class Presenter implements PresenterIF {
 
             mCompositeDisposable.add(mRepositoryIF.getNewsFor2018(mPage).subscribeWith(getObserver()));
         } else if (mItemId == R.id.science_item) {
-            if (!b5) {
-                b5 = loadingCollections = true;
-                b1 = b2 = b3 = b4 = loadingPhotosCollection = false;
+            if (!pageEqualsOneItem5) {
+                pageEqualsOneItem5 = loadingCollections = true;
+                pageEqualsOneItem1 = pageEqualsOneItem2 = pageEqualsOneItem3 = pageEqualsOneItem4
+                        = loadingPhotosCollection = false;
                 mPage = 1;
                 mArticles.clear();
                 mRepositoryIF.clearCash();
@@ -125,14 +131,14 @@ public class Presenter implements PresenterIF {
 
             mCompositeDisposable.add(mRepositoryIF.getScienceArticles(mPage).subscribeWith(getObserver()));
         } else if (mItemId == R.id.saved_item) {
-            b1 = b2 = b3 = b4 = b5 = loadingCollections = false;
+            pageEqualsOneItem1 = pageEqualsOneItem2 = pageEqualsOneItem3 = pageEqualsOneItem4
+                    = pageEqualsOneItem5 = loadingCollections = false;
             mFragmentIF.showItems(mRepositoryIF.readResuls());
         }
     }
 
     private DisposableObserver<Model> getObserver() {
         if (mArticles.size() == 0) {
-            Log.i(TAG, "getObserver(); mArticles.size() == 0");
             mFragmentIF.showProgress();
         }
         return new DisposableObserver<Model>() {
@@ -140,7 +146,6 @@ public class Presenter implements PresenterIF {
             public void onNext(Model model) {
                 mCash = mRepositoryIF.readFromCash();
                 if (mCash.size() == mArticles.size()) {
-                    Log.d(TAG, "getObserver(); mRepositoryIF.writeToCash(items);");
                     mRepositoryIF.writeToCash(model.getArticles());
                 }
                 mFragmentIF.hideProgress();

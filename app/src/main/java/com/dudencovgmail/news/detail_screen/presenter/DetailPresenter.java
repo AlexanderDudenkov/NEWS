@@ -18,6 +18,7 @@ import com.dudencovgmail.news.model.Model;
 import com.dudencovgmail.news.model.RepositoryIF;
 
 import java.io.File;
+import java.util.Objects;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
@@ -30,10 +31,9 @@ public class DetailPresenter implements DetailPresenterIF {
     private DetailFragmentIF mDetailFragmentIF;
     private DetailActivityIF mDetailActivityIF;
     private ViewPager mViewPager;
-    private int mSize, mPage, mPosition;
+    private int mSize, mPosition;
     private Boolean amLoading = false;
     private Article mArticle;
-    private Context mContext;
     private CompositeDisposable mCompositeDisposable;
     private boolean mItemMenuSaved, isSaved;
     private RealmResults<Article> mArticles;
@@ -66,7 +66,6 @@ public class DetailPresenter implements DetailPresenterIF {
 
     @Override
     public void getSize(boolean itemMenuSaved) {
-        Log.d(TAG, "getSize(boolean itemMenuSaved)");
         mItemMenuSaved = itemMenuSaved;
         if (mItemMenuSaved) {
             mArticles = mRepositoryIF.readResuls();
@@ -79,41 +78,40 @@ public class DetailPresenter implements DetailPresenterIF {
 
     @Override
     public void loadPhoto(Context context, ImageView imageView, String url) {
-        mContext = context;
-        if (mItemMenuSaved){
+        if (mItemMenuSaved) {
             Bitmap image = BitmapFactory.decodeFile(mArticle.getFileName());
             imageView.setImageBitmap(image);
-        }else {
+        } else {
             mRepositoryIF.loadPhoto(context, imageView, url);
         }
     }
 
     @Override
-    public void getArticle(int position, boolean itemMenuSaved) {
+    public void getArticle(int positionDetFrag, boolean itemMenuSaved) {
         mItemMenuSaved = itemMenuSaved;
-        mPosition = position;
         if (mItemMenuSaved) {
-            mArticle = mArticles.get(mPosition);
+            mArticle = mArticles.get(positionDetFrag);
         } else {
             mDetailActivityIF.showFab();
-            mArticle = mRepositoryIF.readFromCash(mPosition);
+            mArticle = mRepositoryIF.readFromCash(positionDetFrag);
         }
         mDetailFragmentIF.getArticle(mArticle);
     }
 
     @Override
-    public void runLoadData(int position, final ViewPager viewPager) {
+    public void runLoadData(int positionDetAct, final ViewPager viewPager) {
         mViewPager = viewPager;
-        mPosition = position;
-        if (!(amLoading) && mPosition >= (mSize - 15)) {
+        mPosition = positionDetAct;
+        if (!(amLoading) && positionDetAct >= (mSize - 15)) {
             amLoading = true;
-            if (mPosition < 30) {
-                mPage = 1;
+            int page;
+            if (positionDetAct < 30) {
+                page = 1;
             } else {
-                mPage = (mPosition / 30) + 1;
+                page = (positionDetAct / 30) + 1;
             }
-            mPage++;
-            mCompositeDisposable.add(mRepositoryIF.getLatestArticles(mPage).subscribeWith(getObserver()));
+            page++;
+            mCompositeDisposable.add(mRepositoryIF.getLatestArticles(page).subscribeWith(getObserver()));
         }
     }
 
@@ -124,7 +122,6 @@ public class DetailPresenter implements DetailPresenterIF {
 
     @Override
     public void clickFabControl() {
-        Log.d(TAG, "clickFabControl()");
         saveArticle();
     }
 
@@ -137,11 +134,9 @@ public class DetailPresenter implements DetailPresenterIF {
     private void saveArticle() {
         if (!isSaved) {
             isSaved = true;
-            if ((mPosition - 1) == -1) {
-                mPosition = 1;
-            }
             mDetailActivityIF.hideFab();
-            mArticle = mRepositoryIF.readFromCash(mPosition - 1);
+            Log.d(TAG, "saveArticle(); mPosition = " + mPosition);
+            mArticle = mRepositoryIF.readFromCash(mPosition);
             File file = mRepositoryIF.getImageFile(mArticle);
             mArticle.setFileName(file.getAbsolutePath());
             mRepositoryIF.writeResult(mArticle);
@@ -163,7 +158,7 @@ public class DetailPresenter implements DetailPresenterIF {
                         amLoading = false;
                     }
                 });
-                mViewPager.getAdapter().notifyDataSetChanged();
+                Objects.requireNonNull(mViewPager.getAdapter()).notifyDataSetChanged();
             }
 
             @Override
